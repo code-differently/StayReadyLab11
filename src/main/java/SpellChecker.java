@@ -1,22 +1,30 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class SpellChecker {
     Scanner scanner = new Scanner(System.in);
     private final static Logger myLogger = Logger.getLogger("com.codedifferently.spellchecker");
     private HashSet<String> setOfWords = new HashSet<String>();
+    private final File wordsSpelledCorrectlyFile = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt");
+    TreeMap <String, ArrayList<String>> suggestions = new TreeMap<>();
 
     public static void main(String[] args) {
         SpellChecker checker = new SpellChecker();
-        checker.keepAskingUserUntilTheyInputTheRightFile();
+        try {
+            checker.readFile(checker.getWordsSpelledCorrectlyFile());
+        }
+        catch(FileNotFoundException fileNotFound) {
+            myLogger.info("Make sure that the reference wordsSpelledCorrectlyFile has the right file path");
+        }
+
+
+        //checker.keepAskingUserUntilTheyInputTheRightFile();
 
         myLogger.info("Size of the set: " + checker.getSetOfWords().size());
-        myLogger.info(checker.createListOfWordsFromSet());
+        myLogger.info(checker.displayListOfWordsFromSet());
     }
 
     private void keepAskingUserUntilTheyInputTheRightFile() {
@@ -64,7 +72,7 @@ public class SpellChecker {
         }
     }
 
-    private String createListOfWordsFromSet() {
+    private String displayListOfWordsFromSet() {
         StringBuilder builder = new StringBuilder();
         for (String word : setOfWords) {
             builder.append("This is a word that is spelled correctly: " + word + "\n");
@@ -72,7 +80,37 @@ public class SpellChecker {
         return builder.toString();
     }
 
+    private boolean checkIfWordIsMisspelled(String word) {
+        return setOfWords.contains(word);
+    }
+
+    public String findSugggestionsUsingDelete(String wordToBeChanged) {
+
+        for(int index = 0; index < wordToBeChanged.length(); index++) {
+            String subsetOfWord = wordToBeChanged.substring(0, index) + wordToBeChanged.substring(index + 1);
+            if(setOfWords.contains(subsetOfWord)) {
+                populateSuggestions(wordToBeChanged, subsetOfWord);
+            }
+        }
+    }
+
+    private void populateSuggestions(String wordToBeChanged, String subsetOfWord) {
+        if(!suggestions.containsKey(wordToBeChanged)) {
+            suggestions.put(wordToBeChanged, new ArrayList<String>());
+        }
+        suggestions.get(wordToBeChanged).add(subsetOfWord);
+    }
+
+    public boolean isThereSuggestions(String word) {
+        return suggestions.get(word).size() != 0;
+    }
+
     public HashSet<String> getSetOfWords() {
         return this.setOfWords;
     }
+
+    public File getWordsSpelledCorrectlyFile() {
+        return this.wordsSpelledCorrectlyFile;
+    }
+
 }

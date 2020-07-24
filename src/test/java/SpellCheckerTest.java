@@ -31,4 +31,25 @@ public class SpellCheckerTest {
 
         Assert.assertEquals(expectedSize, actualSize);
     }
+
+    @Test
+    public void deleteALetterFromWordTest() {
+        String expectedSuggestion = "urging";
+
+        String inserted = "furging";
+        String actualSuggestion = "";
+
+        Assert.assertEquals(expectedSuggestion, actualSuggestion);
+
+    }
+
+    @Test
+    public void getWordsSpelledCorrectlyFileTest() {
+        String expectedFilePath = "C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt";
+
+        File wordsSpelledCorrectly = spellChecker.getWordsSpelledCorrectlyFile();
+        String actualFilePath = wordsSpelledCorrectly.toString();
+
+        Assert.assertEquals(expectedFilePath, actualFilePath);
+    }
 }
