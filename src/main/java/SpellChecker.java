@@ -20,20 +20,19 @@ public class SpellChecker {
             myLogger.info("Make sure that the reference wordsSpelledCorrectlyFile has the right file path");
         }
 
+        checker.keepAskingUserUntilTheyInputTheRightFile();
 
-        //checker.keepAskingUserUntilTheyInputTheRightFile();
-
-        myLogger.info("Size of the set: " + checker.getSetOfWords().size());
         myLogger.info(checker.displayListOfWordsFromSet());
+        //myLogger.info("Size of the set: " + checker.getSetOfWords().size());
     }
 
     private void keepAskingUserUntilTheyInputTheRightFile() {
         String path;
         boolean fileNotValid = true;
         while(fileNotValid) {
+            path = this.askUserForFilePath();
+            File file = this.tidyUpPathAndReturnFile(path);
             try {
-                path = this.askUserForFilePath();
-                File file = this.tidyUpPathAndReturnFile(path);
                 this.readFile(file);
                 fileNotValid = false;
             }
@@ -46,7 +45,7 @@ public class SpellChecker {
     private String askUserForFilePath() {
         Scanner scanner = new Scanner(System.in);
 
-        myLogger.info("Enter a file path name.");
+        myLogger.info("Enter a file path name that is going to be spell checked.");
 
         return scanner.next() + "\n";
     }
@@ -80,11 +79,11 @@ public class SpellChecker {
         return builder.toString();
     }
 
-    private boolean checkIfWordIsMisspelled(String word) {
+    private boolean isWordSpelledCorrectly(String word) {
         return setOfWords.contains(word);
     }
 
-    public String findSugggestionsUsingDelete(String wordToBeChanged) {
+    public void findSugggestionsUsingDelete(String wordToBeChanged) {
 
         for(int index = 0; index < wordToBeChanged.length(); index++) {
             String subsetOfWord = wordToBeChanged.substring(0, index) + wordToBeChanged.substring(index + 1);
