@@ -8,11 +8,16 @@ import java.util.TreeSet;
 
 public class SpellChecker {
     private HashSet<String> dictionary = new HashSet<String>();
-    private Set<String> printIncorrect = new TreeSet<String>();
+    private Set<String> printCorrect = new TreeSet<String>();
     private char[] alphabetArray = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     public SpellChecker() {
 
+    }
+
+    public Set<String> getCorrect()
+    {
+        return printCorrect;
     }
 
     public void fillDict(String fileInput) throws FileNotFoundException 
@@ -22,11 +27,9 @@ public class SpellChecker {
         {
             dictionary.add(scan.next());
         }
-
-        System.out.println(dictionary.size());
     }
 
-    //Method to check if file exisrs
+    //Method to check if file exists  abd use it if it does
     public void checkFile(String input) throws FileNotFoundException 
     {
         try
@@ -55,7 +58,7 @@ public class SpellChecker {
             checkRemove(word);
             checkSwap(word);
             checkSwitch(word);
-            System.out.println(printIncorrect.toString());
+            System.out.println(printCorrect.toString());
         } 
         else 
         {
@@ -63,11 +66,11 @@ public class SpellChecker {
         }
 
        
-        printIncorrect.clear();
+        printCorrect.clear();
 
     }
     //Complete Method to insert any letter at any point in the misspelled word
-    private void checkAdd(String word) 
+    public void checkAdd(String word) 
     {
       StringBuilder sBuilder = new StringBuilder(word);
       
@@ -80,7 +83,7 @@ public class SpellChecker {
                 String check = String.valueOf(sBuilder);
                 if (dictionary.contains(check)) 
                 {
-                    printIncorrect.add(check);
+                    printCorrect.add(check);
                 }
                 sBuilder = new StringBuilder(word);
             }
@@ -88,7 +91,7 @@ public class SpellChecker {
     }
 
     //Complete: Method to delete any one of the letters from the misspelled word
-    private void checkRemove(String word) 
+    public void checkRemove(String word) 
     {
         StringBuilder sBuilder = new StringBuilder(word);
         for (int i = 0; i < word.length(); i++) 
@@ -97,7 +100,7 @@ public class SpellChecker {
             String checker = String.valueOf(sBuilder.toString());
                 if (dictionary.contains(checker)) 
                 {
-                    printIncorrect.add(checker);
+                    printCorrect.add(checker);
                     
                 }
                 sBuilder = new StringBuilder(word);  
@@ -105,7 +108,7 @@ public class SpellChecker {
     }
     
     //Complete Method to change any letter in the misspelled word to any other letter
-    private void checkSwitch(String word) 
+    public void checkSwitch(String word) 
     {
         char[] wordArray = word.toCharArray();
 
@@ -118,7 +121,7 @@ public class SpellChecker {
                 String check = String.valueOf(wordArray);
                 if (dictionary.contains(check)) 
                 {
-                   printIncorrect.add(check);
+                   printCorrect.add(check);
                 }
 
             }
@@ -126,7 +129,7 @@ public class SpellChecker {
     }
 
     //Complete Method to swap any two neighboring characters in the misspelled word
-    private void checkSwap(String word)
+    public void checkSwap(String word)
     {
         StringBuilder sBuilder = new StringBuilder(word);
         for (int i = 0; i < word.length()-1;i++)
@@ -140,7 +143,7 @@ public class SpellChecker {
             String check = String.valueOf(sBuilder);
             if (dictionary.contains(check))
             {
-                printIncorrect.add(check);
+                printCorrect.add(check);
             }
             sBuilder = new StringBuilder(word);
         }
