@@ -3,6 +3,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.TreeSet;
 
 public class SpellCheckerTest {
 
@@ -18,32 +19,46 @@ public class SpellCheckerTest {
     @Test
     public void deleteLettersTest(){
         SpellChecker sc = new SpellChecker();
+        TreeSet<String> set = new TreeSet<>();
+        TreeSet<String> exp = new TreeSet<>();
+        exp.add("lemons");
         File file = new File("words_alpha.txt");
         sc.createSet(file);
-        Assert.assertEquals("lemons ", sc.deleteLetters("leemons"));
+        Assert.assertEquals(exp, sc.deleteLetters("leemons",set));
     }
 
     @Test
     public void swapLettersTest(){
         SpellChecker sc = new SpellChecker();
+        TreeSet<String> set = new TreeSet<>();
+        TreeSet<String> exp = new TreeSet<>();
+        exp.add("lemons");
         File file = new File("words_alpha.txt");
         sc.createSet(file);
-        Assert.assertEquals("lemons ", sc.swapLetters("leomns"));
+        Assert.assertEquals(exp, sc.swapLetters("leomns",set));
     }
 
     @Test
     public void changeLettersTest(){
         SpellChecker sc = new SpellChecker();
+        TreeSet<String> set = new TreeSet<>();
+        TreeSet<String> exp = new TreeSet<>();
+        exp.add("dromons");
         File file = new File("words_alpha.txt");
         sc.createSet(file);
-        Assert.assertEquals("dromons ", sc.changeLetters("deomons"));
+        Assert.assertEquals(exp, sc.changeLetters("deomons",set));
     }
 
     @Test
     public void insertLettersTest(){
         SpellChecker sc = new SpellChecker();
+        TreeSet<String> set = new TreeSet<>();
+        TreeSet<String> exp = new TreeSet<>();
+        exp.add("demons");
+        exp.add("lemons");
+        exp.add("ebons");
         File file = new File("words_alpha.txt");
         sc.createSet(file);
-        Assert.assertEquals("demons lemons ebons ", sc.insertLetters("emons"));
+        Assert.assertEquals(exp, sc.insertLetters("emons",set));
     }
 }

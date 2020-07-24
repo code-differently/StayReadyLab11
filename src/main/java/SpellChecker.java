@@ -83,24 +83,26 @@ public class SpellChecker {
 
     public String checkSpell(File file){
         createCheckSet(file);
-        HashMap<String,String> map = new HashMap<>();
-
+        TreeMap<String,TreeSet<String>> map = new TreeMap<>();
+        TreeSet<String> sSet;
         for(String s: checkSet) {
             if(!set.contains(s)){
-                map.put(s,deleteLetters(s));
-                map.put(s, map.get(s) + changeLetters(s));
-                map.put(s, map.get(s) + insertLetters(s));
-                map.put(s, map.get(s) + swapLetters(s));
-                if(map.get(s).isEmpty()){
-                    map.put(s, "No Suggestions");
+                sSet = new TreeSet<>();
+                deleteLetters(s, sSet);
+                changeLetters(s, sSet);
+                insertLetters(s, sSet);
+                swapLetters(s, sSet);
+                if(sSet.isEmpty()){
+                    sSet.add("No Suggestions");
                 }
+                map.put(s, sSet);
             }
         }
        // map.remove("");
         return getMap(map);
     }
 
-    public String deleteLetters(String w){
+    public TreeSet deleteLetters(String w, TreeSet<String> sSet){
         String words = "";
         String temp;
 
@@ -108,29 +110,32 @@ public class SpellChecker {
             if(i == 0){
                 temp = w.substring(i + 1);
                 if(set.contains(temp) && tSet.contains(temp)){
-                    words += temp + " ";
+                    //words += temp + " ";
+                    sSet.add(temp);
                     tSet.remove(temp);
                 }
             }
             else if(i == w.length()-1){
                 temp = w.substring(0, i);
                 if(set.contains(temp) && tSet.contains(temp)){
-                    words += temp + " ";
+                    //words += temp + " ";
+                    sSet.add(temp);
                     tSet.remove(temp);
                 }
             }
             else{
                 temp = w.substring(0, i) + w.substring(i+1);
                  if(set.contains(temp)&& tSet.contains(temp)) {
-                     words += temp + " ";
+                     //words += temp + " ";
+                     sSet.add(temp);
                      tSet.remove(temp);
                  }
             }
         }
-        return words;
+        return sSet;
     }
 
-    public String changeLetters(String w){
+    public TreeSet changeLetters(String w, TreeSet<String> sSet){
         String words = "";
         String temp = w;
         char [] l = w.toCharArray();
@@ -139,17 +144,18 @@ public class SpellChecker {
                 l[i] = (char) ('a' + a);
                 temp = new String(l);
                 if(set.contains(temp) && tSet.contains(temp)) {
-                    words += temp + " ";
+                   // words += temp + " ";
+                    sSet.add(temp);
                     tSet.remove(temp);
                 }
             }
             l[i] = w.charAt(i);
 
         }
-        return words;
+        return sSet;
     }
 
-    public String insertLetters(String w){
+    public TreeSet insertLetters(String w, TreeSet<String> sSet){
         String words = "";
         String temp = w;
         String insert;
@@ -159,30 +165,33 @@ public class SpellChecker {
                 if(i == 0){
                     temp = insert + w.substring(i);
                     if(set.contains(temp) && tSet.contains(temp)){
-                        words += temp + " ";
+                        //words += temp + " ";
+                        sSet.add(temp);
                         tSet.remove(temp);
                     }
                 }
                 else if(i == w.length()-1){
                     temp += insert;
                     if(set.contains(temp) && tSet.contains(temp)){
-                        words += temp + " ";
+                        //words += temp + " ";
+                        sSet.add(temp);
                         tSet.remove(temp);
                     }
                 }
                 else{
                     temp = w.substring(0, i) + insert + w.substring(i+1);
                     if(set.contains(temp) && tSet.contains(temp)) {
-                        words += temp + " ";
+                        //words += temp + " ";
+                        sSet.add(temp);
                         tSet.remove(temp);
                     }
                 }
             }
         }
-        return words;
+        return sSet;
     }
 
-    public String swapLetters(String w){
+    public TreeSet swapLetters(String w , TreeSet<String> sSet){
         String words = "";
         String temp;
         char t;
@@ -195,14 +204,15 @@ public class SpellChecker {
 
             temp = new String(l);
             if(set.contains(temp) && tSet.contains(temp)) {
-                words += temp + " ";
+                //words += temp + " ";
+                sSet.add(temp);
                 tSet.remove(temp);
             }
         }
-        return words;
+        return sSet;
     }
 
-    public String getMap(HashMap<String, String> map){
+    public String getMap(TreeMap<String, TreeSet<String>> map){
 
         Object[] arr =  map.keySet().toArray();
         Arrays.sort(arr);
@@ -221,10 +231,10 @@ public class SpellChecker {
         log.info("Enter a file: ");
         String f = scan.nextLine();
         sc.createSet(new File(f));
-       // sc.createSet(new File("words_alpha.txt"));
+        //sc.createSet(new File("words_alpha.txt"));
         log.info("Enter a file to check: ");
         f = scan.nextLine();
-        System.out.println(sc.checkSpell(new File(f)));
-        //System.out.println(sc.checkSpell(new File("letter_from_gandhi.txt")));
+        log.info(sc.checkSpell(new File(f)));
+        //log.info(sc.checkSpell(new File("letter_from_gandhi.txt")));
     }
 }
