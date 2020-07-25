@@ -94,8 +94,7 @@ public class SpellChecker {
     }
 
     public void findSuggestionsByChangingLetters(String wordToBeChanged) {
-        StringBuilder flexibleWord = new StringBuilder();
-        flexibleWord.append(wordToBeChanged);
+        StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
         int lengthOfWord = flexibleWord.length();
 
         for(int letterIndex = 0; letterIndex < lengthOfWord; letterIndex++) {
@@ -108,13 +107,26 @@ public class SpellChecker {
     }
 
     public void insertLetterAtAnyPoint(String wordToBeChanged) {
-        StringBuilder flexibleWord = new StringBuilder();
-        flexibleWord.append(wordToBeChanged);
+        StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
         int lengthOfWord = flexibleWord.length();
 
-        for(int indexOfBuilder = 0; indexOfBuilder < flexibleWord.length(); indexOfBuilder++) {
+        for(int indexOfBuilder = 0; indexOfBuilder < lengthOfWord; indexOfBuilder++) {
             for(int letterInAlpha = 0; letterInAlpha < alphabetArr.length; letterInAlpha++) {
                 flexibleWord.insert(indexOfBuilder, alphabetArr[letterInAlpha]);
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
+                flexibleWord.replace(0, lengthOfWord + 1, wordToBeChanged);
+            }
+        }
+    }
+
+    public void swapAnyTwoLetters(String wordToBeChanged) {
+        StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
+        int lengthOfWord = flexibleWord.length();
+
+        for(int index = 0; index < lengthOfWord; index++) {
+            for(int oneAhead = 1; oneAhead < lengthOfWord; oneAhead++) {
+                flexibleWord.setCharAt(index, wordToBeChanged.charAt(oneAhead));
+                flexibleWord.setCharAt(oneAhead, wordToBeChanged.charAt(index));
                 populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
                 flexibleWord.replace(0, lengthOfWord + 1, wordToBeChanged);
             }
