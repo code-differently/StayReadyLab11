@@ -94,31 +94,31 @@ public class SpellChecker {
     }
 
     public void findSuggestionsByChangingLetters(String wordToBeChanged) {
-        char[] lettersOfWord = wordToBeChanged.toCharArray();
+        StringBuilder flexibleWord = new StringBuilder();
+        flexibleWord.append(wordToBeChanged);
+        int lengthOfWord = flexibleWord.length();
 
-        for(int letterIndex = 0; letterIndex < lettersOfWord.length; letterIndex++) {
-            lettersOfWord = wordToBeChanged.toCharArray();
+        for(int letterIndex = 0; letterIndex < lengthOfWord; letterIndex++) {
+            flexibleWord.replace(0, lengthOfWord, wordToBeChanged);
             for(int alphabetIndex = 0; alphabetIndex < alphabetArr.length; alphabetIndex++) {
-                lettersOfWord[letterIndex] = alphabetArr[alphabetIndex];
-                String newWord = String.valueOf(lettersOfWord);
-                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, newWord);
+                flexibleWord.replace(letterIndex, letterIndex + 1, String.valueOf(alphabetArr[alphabetIndex]));
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
             }
         }
     }
 
     public void insertLetterAtAnyPoint(String wordToBeChanged) {
-        char[] lettersOfWord = wordToBeChanged.toCharArray();
-        ArrayList<Character> listWithOneMoreLetterSometimes = new ArrayList<>();
-        for(Character letter: lettersOfWord) {
-            listWithOneMoreLetterSometimes.add(letter);
-        }
-        for(int indexOfArrayList = 0; indexOfArrayList < listWithOneMoreLetterSometimes.size(); indexOfArrayList++) {
+        StringBuilder flexibleWord = new StringBuilder();
+        flexibleWord.append(wordToBeChanged);
+        int lengthOfWord = flexibleWord.length();
+
+        for(int indexOfBuilder = 0; indexOfBuilder < flexibleWord.length(); indexOfBuilder++) {
             for(int letterInAlpha = 0; letterInAlpha < alphabetArr.length; letterInAlpha++) {
-                listWithOneMoreLetterSometimes.add(indexOfArrayList, alphabetArr[letterInAlpha]);
+                flexibleWord.insert(indexOfBuilder, alphabetArr[letterInAlpha]);
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
+                flexibleWord.replace(0, lengthOfWord + 1, wordToBeChanged);
             }
         }
-
-
     }
 
     public void populateAlphabetArray() {

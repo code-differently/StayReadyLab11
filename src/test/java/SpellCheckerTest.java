@@ -66,10 +66,21 @@ public class SpellCheckerTest {
 
     @Test
     public void findSuggestionsByChangingLettersTest() {
-        String misspelledWord = "gopherperry";
-        String expectedResult = "gopherperry: gopherberry";
+        String misspelledWord = "fopherberry";
+        String expectedResult = "fopherberry: gopherberry";
 
         spellChecker.findSuggestionsByChangingLetters(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void insertLetterAtAnyPointTest() {
+        String misspelledWord = "gooers";
+        String expectedResult = "gooers: goobers, gooders";
+
+        spellChecker.insertLetterAtAnyPoint(misspelledWord);
         String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
 
         Assert.assertEquals(expectedResult, actualResult);
