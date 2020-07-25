@@ -106,6 +106,21 @@ public class SpellChecker {
         }
     }
 
+    public void insertLetterAtAnyPoint(String wordToBeChanged) {
+        char[] lettersOfWord = wordToBeChanged.toCharArray();
+        ArrayList<Character> listWithOneMoreLetterSometimes = new ArrayList<>();
+        for(Character letter: lettersOfWord) {
+            listWithOneMoreLetterSometimes.add(letter);
+        }
+        for(int indexOfArrayList = 0; indexOfArrayList < listWithOneMoreLetterSometimes.size(); indexOfArrayList++) {
+            for(int letterInAlpha = 0; letterInAlpha < alphabetArr.length; letterInAlpha++) {
+                listWithOneMoreLetterSometimes.add(indexOfArrayList, alphabetArr[letterInAlpha]);
+            }
+        }
+
+
+    }
+
     public void populateAlphabetArray() {
         for(int whichLetter = 0; whichLetter < alphabetArr.length; whichLetter++) {
             alphabetArr[whichLetter] = (char) ('a' + whichLetter);
