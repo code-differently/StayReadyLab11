@@ -5,16 +5,19 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class SpellChecker {
-    Scanner scanner = new Scanner(System.in);
-    private final static Logger myLogger = Logger.getLogger("com.codedifferently.spellchecker");
-    private HashSet<String> setOfWords = new HashSet<String>();
-    private final File wordsSpelledCorrectlyFile = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt");
+    private HashSet<String> setOfCorrectlySpelledWords = new HashSet<String>();
     TreeMap <String, ArrayList<String>> suggestions = new TreeMap<>();
+    private Scanner scanner = new Scanner(System.in);
+
+    private final static Logger myLogger = Logger.getLogger("com.codedifferently.spellchecker");
+    private final File wordsSpelledCorrectlyFile = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt");
+    private final Character[] alphabetArr = new Character[26];
 
     public static void main(String[] args) {
         SpellChecker checker = new SpellChecker();
+        checker.populateAlphabetArray();
         try {
-            checker.readFile(checker.getWordsSpelledCorrectlyFile());
+            checker.readFile(checker.getWordsSpelledCorrectlyFile(), true);
         }
         catch(FileNotFoundException fileNotFound) {
             myLogger.info("Make sure that the reference wordsSpelledCorrectlyFile has the right file path");
@@ -22,7 +25,7 @@ public class SpellChecker {
 
         checker.keepAskingUserUntilTheyInputTheRightFile();
 
-        myLogger.info(checker.displayListOfWordsFromSet());
+        //myLogger.info(checker.displayListOfWordsFromSet());
         //myLogger.info("Size of the set: " + checker.getSetOfWords().size());
     }
 
@@ -33,7 +36,7 @@ public class SpellChecker {
             path = this.askUserForFilePath();
             File file = this.tidyUpPathAndReturnFile(path);
             try {
-                this.readFile(file);
+                this.readFile(file, false);
                 fileNotValid = false;
             }
             catch(FileNotFoundException fileNotFoundException) {
@@ -44,9 +47,7 @@ public class SpellChecker {
 
     private String askUserForFilePath() {
         Scanner scanner = new Scanner(System.in);
-
         myLogger.info("Enter a file path name that is going to be spell checked.");
-
         return scanner.next() + "\n";
     }
 
@@ -59,53 +60,98 @@ public class SpellChecker {
         return file;
     }
 
-    public void readFile(File file) throws FileNotFoundException {
+    public void readFile(File file, boolean fileWithCorrectSpelling) throws FileNotFoundException {
         try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
             while(in.hasNext()) {
                 String individualWord = in.next().toLowerCase();
-                //replace a character that is not a-z with inserting nothing.
-                // (I don't check for A-Z because I change the string to lower case)
-                individualWord = individualWord.replaceAll("[^a-z]", "");
-                setOfWords.add(individualWord);
+                if(fileWithCorrectSpelling) {
+                    setOfCorrectlySpelledWords.add(individualWord);
+                }
+                else if(!wordSpelledCorrectly(individualWord)){
+                    findSuggestions(individualWord);
+                }
             }
         }
     }
 
-    private String displayListOfWordsFromSet() {
-        StringBuilder builder = new StringBuilder();
-        for (String word : setOfWords) {
-            builder.append("This is a word that is spelled correctly: " + word + "\n");
+    private boolean wordSpelledCorrectly(String word) {
+        return setOfCorrectlySpelledWords.contains(word);
+    }
+
+    private void findSuggestions(String misspelledWord) {
+        //only find suggestions if you haven't done so already
+        if(!suggestions.containsKey(misspelledWord)) {
+            findSuggestionsUsingDelete(misspelledWord);
+            findSuggestionsByChangingLetters(misspelledWord);
         }
-        return builder.toString();
     }
 
-    private boolean isWordSpelledCorrectly(String word) {
-        return setOfWords.contains(word);
-    }
-
-    public void findSugggestionsUsingDelete(String wordToBeChanged) {
-
+    public void findSuggestionsUsingDelete(String wordToBeChanged) {
         for(int index = 0; index < wordToBeChanged.length(); index++) {
             String subsetOfWord = wordToBeChanged.substring(0, index) + wordToBeChanged.substring(index + 1);
-            if(setOfWords.contains(subsetOfWord)) {
-                populateSuggestions(wordToBeChanged, subsetOfWord);
+            populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, subsetOfWord);
+        }
+    }
+
+    public void findSuggestionsByChangingLetters(String wordToBeChanged) {
+        char[] lettersOfWord = wordToBeChanged.toCharArray();
+
+        for(int letterIndex = 0; letterIndex < lettersOfWord.length; letterIndex++) {
+            lettersOfWord = wordToBeChanged.toCharArray();
+            for(int alphabetIndex = 0; alphabetIndex < alphabetArr.length; alphabetIndex++) {
+                lettersOfWord[letterIndex] = alphabetArr[alphabetIndex];
+                String newWord = String.valueOf(lettersOfWord);
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, newWord);
             }
         }
     }
 
-    private void populateSuggestions(String wordToBeChanged, String subsetOfWord) {
-        if(!suggestions.containsKey(wordToBeChanged)) {
-            suggestions.put(wordToBeChanged, new ArrayList<String>());
+    public void populateAlphabetArray() {
+        for(int whichLetter = 0; whichLetter < alphabetArr.length; whichLetter++) {
+            alphabetArr[whichLetter] = (char) ('a' + whichLetter);
         }
-        suggestions.get(wordToBeChanged).add(subsetOfWord);
+    }
+
+    public Character[] getAlphabetArr() {
+        return this.alphabetArr;
+    }
+
+    private void populateSuggestionsIfChangedWordIsSpelledCorrectly(String wordToBeChanged, String changedWord) {
+        if(setOfCorrectlySpelledWords.contains(changedWord)) {
+            if (!suggestions.containsKey(wordToBeChanged)) {
+                suggestions.put(wordToBeChanged, new ArrayList<String>());
+            }
+            suggestions.get(wordToBeChanged).add(changedWord);
+        }
+    }
+
+    public String displayListOfSuggestions(String misspelledWord) {
+        ArrayList<String> individualSuggestions = suggestions.get(misspelledWord);
+        int sizeOfSuggestions = individualSuggestions.size();
+
+        if(sizeOfSuggestions == 0) {
+            String noResultsFound = misspelledWord + ": (no suggestions)";
+            return noResultsFound;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(misspelledWord + ": ");
+        Collections.sort(individualSuggestions);
+
+        for (int index = 0; index < sizeOfSuggestions; index++) {
+            String word = individualSuggestions.get(index);
+            String wordWithOrWithoutComma = index != sizeOfSuggestions - 1 ? word + ", " : word;
+            builder.append(wordWithOrWithoutComma);
+        }
+        return builder.toString();
     }
 
     public boolean isThereSuggestions(String word) {
         return suggestions.get(word).size() != 0;
     }
 
-    public HashSet<String> getSetOfWords() {
-        return this.setOfWords;
+    public HashSet<String> getSetOfCorrectlySpelledWords() {
+        return this.setOfCorrectlySpelledWords;
     }
 
     public File getWordsSpelledCorrectlyFile() {

@@ -16,31 +16,21 @@ public class SpellCheckerTest {
         file = new File("words_alpha.txt");
         spellChecker = new SpellChecker();
         try {
-            spellChecker.readFile(file);
+            spellChecker.readFile(file, true);
         }
         catch(FileNotFoundException fileNotFound) {
             myLogger.info("Try again");
         }
+        spellChecker.populateAlphabetArray();
     }
 
     @Test
     public void getSetOfWordsTest() {
         int expectedSize = 370104;
 
-        int actualSize = spellChecker.getSetOfWords().size();
+        int actualSize = spellChecker.getSetOfCorrectlySpelledWords().size();
 
         Assert.assertEquals(expectedSize, actualSize);
-    }
-
-    @Test
-    public void deleteALetterFromWordTest() {
-        String expectedSuggestion = "urging";
-
-        String inserted = "furging";
-        String actualSuggestion = "";
-
-        Assert.assertEquals(expectedSuggestion, actualSuggestion);
-
     }
 
     @Test
@@ -51,5 +41,37 @@ public class SpellCheckerTest {
         String actualFilePath = wordsSpelledCorrectly.toString();
 
         Assert.assertEquals(expectedFilePath, actualFilePath);
+    }
+
+    @Test
+    public void getAlphabetArr() {
+        int expectedSize = 26;
+
+        Character[] alphabetArr = spellChecker.getAlphabetArr();
+        int actualSize = alphabetArr.length;
+
+        Assert.assertEquals(expectedSize, actualSize);
+    }
+
+    @Test
+    public void findSuggestionsUsingDeleteTest() {
+        String misspelledWord = "gorale";
+        String expectedResult = "gorale: goral, orale";
+
+        spellChecker.findSuggestionsUsingDelete(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void findSuggestionsByChangingLettersTest() {
+        String misspelledWord = "gopherperry";
+        String expectedResult = "gopherperry: gopherberry";
+
+        spellChecker.findSuggestionsByChangingLetters(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+
+        Assert.assertEquals(expectedResult, actualResult);
     }
 }
