@@ -85,4 +85,15 @@ public class SpellCheckerTest {
 
         Assert.assertEquals(expectedResult, actualResult);
     }
+
+    @Test
+    public void swapNeighboringCharactersTest() {
+        String misspelledWord = "goosde";
+        String expectedResult = "goosde: goosed";
+
+        spellChecker.swapNeighboringCharacters(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
 }

@@ -25,8 +25,14 @@ public class SpellChecker {
 
         checker.keepAskingUserUntilTheyInputTheRightFile();
 
-        //myLogger.info(checker.displayListOfWordsFromSet());
-        //myLogger.info("Size of the set: " + checker.getSetOfWords().size());
+        checker.displayAllSuggestedWords();
+    }
+
+    private void displayAllSuggestedWords() {
+        for(Map.Entry<String, ArrayList<String>> allMisspelledWords: this.suggestions.entrySet()) {
+            String individualMisspelledWord = allMisspelledWords.getKey();
+            myLogger.info(this.displayListOfSuggestions(individualMisspelledWord));
+        }
     }
 
     private void keepAskingUserUntilTheyInputTheRightFile() {
@@ -64,6 +70,9 @@ public class SpellChecker {
         try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
             while(in.hasNext()) {
                 String individualWord = in.next().toLowerCase();
+                //replace a character that is not a-z with a inserting nothing.
+                // (I don't check for A-Z because I change the string to lower case)
+                individualWord = individualWord.replaceAll("[^a-z]", "");
                 if(fileWithCorrectSpelling) {
                     setOfCorrectlySpelledWords.add(individualWord);
                 }
@@ -83,6 +92,8 @@ public class SpellChecker {
         if(!suggestions.containsKey(misspelledWord)) {
             findSuggestionsUsingDelete(misspelledWord);
             findSuggestionsByChangingLetters(misspelledWord);
+            insertLetterAtAnyPoint(misspelledWord);
+
         }
     }
 
@@ -100,7 +111,8 @@ public class SpellChecker {
         for(int letterIndex = 0; letterIndex < lengthOfWord; letterIndex++) {
             flexibleWord.replace(0, lengthOfWord, wordToBeChanged);
             for(int alphabetIndex = 0; alphabetIndex < alphabetArr.length; alphabetIndex++) {
-                flexibleWord.replace(letterIndex, letterIndex + 1, String.valueOf(alphabetArr[alphabetIndex]));
+                int nextIndexAfterLetter = letterIndex + 1;
+                flexibleWord.replace(letterIndex, nextIndexAfterLetter, String.valueOf(alphabetArr[alphabetIndex]));
                 populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
             }
         }
@@ -114,21 +126,23 @@ public class SpellChecker {
             for(int letterInAlpha = 0; letterInAlpha < alphabetArr.length; letterInAlpha++) {
                 flexibleWord.insert(indexOfBuilder, alphabetArr[letterInAlpha]);
                 populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
-                flexibleWord.replace(0, lengthOfWord + 1, wordToBeChanged);
+                int lengthOfStringWithInsertion = flexibleWord.length();
+                flexibleWord.replace(0, lengthOfStringWithInsertion, wordToBeChanged);
             }
         }
     }
 
-    public void swapAnyTwoLetters(String wordToBeChanged) {
+    public void swapNeighboringCharacters(String wordToBeChanged) {
         StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
         int lengthOfWord = flexibleWord.length();
 
         for(int index = 0; index < lengthOfWord; index++) {
-            for(int oneAhead = 1; oneAhead < lengthOfWord; oneAhead++) {
+            if(index < lengthOfWord - 1) {
+                int oneAhead = index + 1;
                 flexibleWord.setCharAt(index, wordToBeChanged.charAt(oneAhead));
                 flexibleWord.setCharAt(oneAhead, wordToBeChanged.charAt(index));
                 populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
-                flexibleWord.replace(0, lengthOfWord + 1, wordToBeChanged);
+                flexibleWord.replace(0, lengthOfWord, wordToBeChanged);
             }
         }
     }
@@ -148,7 +162,11 @@ public class SpellChecker {
             if (!suggestions.containsKey(wordToBeChanged)) {
                 suggestions.put(wordToBeChanged, new ArrayList<String>());
             }
-            suggestions.get(wordToBeChanged).add(changedWord);
+            //keeping suggestions unique
+            if(!suggestions.get(wordToBeChanged).contains(changedWord)) {
+                suggestions.get(wordToBeChanged).add(changedWord);
+            }
+
         }
     }
 
