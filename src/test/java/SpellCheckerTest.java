@@ -96,4 +96,18 @@ public class SpellCheckerTest {
 
         Assert.assertEquals(expectedResult, actualResult);
     }
+
+    @Test
+    public void noSuggestionsTest() {
+        String mispelledWordAccordingToFile = "rightmosttime";
+        String expectedResult = "rightmosttime: (no suggestions)\n";
+
+        spellChecker.findSuggestionsUsingDelete(mispelledWordAccordingToFile);
+        spellChecker.findSuggestionsByChangingLetters("rightmosttime");
+        spellChecker.insertLetterAtAnyPoint("rightmosttime");
+        spellChecker.swapNeighboringCharacters("rightmosttime");
+        String actualResult = spellChecker.displayListOfSuggestions("rightmosttime");
+
+        Assert.assertEquals(expectedResult, actualResult);
+    }
 }
