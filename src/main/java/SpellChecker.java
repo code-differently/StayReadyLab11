@@ -31,7 +31,7 @@ public class SpellChecker {
     private void displayAllSuggestedWords() {
         for(Map.Entry<String, TreeSet<String>> allMisspelledWords: this.suggestions.entrySet()) {
             String individualMisspelledWord = allMisspelledWords.getKey();
-            myLogger.info(this.displayListOfSuggestions(individualMisspelledWord));
+            myLogger.info(this.displayListOfSuggestionsForOneWord(individualMisspelledWord));
         }
     }
 
@@ -170,15 +170,15 @@ public class SpellChecker {
         }
     }
 
-    private void noSuggestionForMisspelledWord(String misspelledWord) {
+    public void noSuggestionForMisspelledWord(String misspelledWord) {
         if(!suggestions.containsKey(misspelledWord)) {
             suggestions.put(misspelledWord, new TreeSet<String>());
         }
     }
 
-    public String displayListOfSuggestions(String misspelledWord) {
-        TreeSet<String> individualSuggestions = suggestions.get(misspelledWord);
-        int sizeOfSuggestions = individualSuggestions.size();
+    public String displayListOfSuggestionsForOneWord(String misspelledWord) {
+        TreeSet<String> misspelledWordSuggestions = suggestions.get(misspelledWord);
+        int sizeOfSuggestions = misspelledWordSuggestions.size();
 
         if(sizeOfSuggestions == 0) {
             String noSuggestions = misspelledWord + ": (no suggestions)\n";
@@ -188,12 +188,9 @@ public class SpellChecker {
         StringBuilder builder = new StringBuilder();
         builder.append(misspelledWord + ": ");
 
-        Iterator <String> suggestionIterator = individualSuggestions.iterator();
-
         int index = 0;
-        while(suggestionIterator.hasNext()) {
-            String individualSuggestion = suggestionIterator.next();
-            String wordWithOrWithoutComma = index != sizeOfSuggestions - 1 ? individualSuggestion + ", " : individualSuggestion;
+        for(String correctlySpelledWord: misspelledWordSuggestions) {
+            String wordWithOrWithoutComma = index != sizeOfSuggestions - 1 ? correctlySpelledWord + ", " : correctlySpelledWord;
             builder.append(wordWithOrWithoutComma);
             index++;
         }

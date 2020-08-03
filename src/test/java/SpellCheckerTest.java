@@ -56,10 +56,10 @@ public class SpellCheckerTest {
     @Test
     public void findSuggestionsUsingDeleteTest() {
         String misspelledWord = "gorale";
-        String expectedResult = "gorale: goral, orale";
+        String expectedResult = "gorale: goral, orale\n";
 
         spellChecker.findSuggestionsUsingDelete(misspelledWord);
-        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestionsForOneWord(misspelledWord);
 
         Assert.assertEquals(expectedResult, actualResult);
     }
@@ -67,10 +67,10 @@ public class SpellCheckerTest {
     @Test
     public void findSuggestionsByChangingLettersTest() {
         String misspelledWord = "fopherberry";
-        String expectedResult = "fopherberry: gopherberry";
+        String expectedResult = "fopherberry: gopherberry\n";
 
         spellChecker.findSuggestionsByChangingLetters(misspelledWord);
-        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestionsForOneWord(misspelledWord);
 
         Assert.assertEquals(expectedResult, actualResult);
     }
@@ -78,10 +78,10 @@ public class SpellCheckerTest {
     @Test
     public void insertLetterAtAnyPointTest() {
         String misspelledWord = "gooers";
-        String expectedResult = "gooers: goobers, gooders";
+        String expectedResult = "gooers: goobers, gooders\n";
 
         spellChecker.insertLetterAtAnyPoint(misspelledWord);
-        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestionsForOneWord(misspelledWord);
 
         Assert.assertEquals(expectedResult, actualResult);
     }
@@ -89,10 +89,10 @@ public class SpellCheckerTest {
     @Test
     public void swapNeighboringCharactersTest() {
         String misspelledWord = "goosde";
-        String expectedResult = "goosde: goosed";
+        String expectedResult = "goosde: goosed\n";
 
         spellChecker.swapNeighboringCharacters(misspelledWord);
-        String actualResult = spellChecker.displayListOfSuggestions(misspelledWord);
+        String actualResult = spellChecker.displayListOfSuggestionsForOneWord(misspelledWord);
 
         Assert.assertEquals(expectedResult, actualResult);
     }
@@ -103,10 +103,11 @@ public class SpellCheckerTest {
         String expectedResult = "rightmosttime: (no suggestions)\n";
 
         spellChecker.findSuggestionsUsingDelete(mispelledWordAccordingToFile);
-        spellChecker.findSuggestionsByChangingLetters("rightmosttime");
-        spellChecker.insertLetterAtAnyPoint("rightmosttime");
-        spellChecker.swapNeighboringCharacters("rightmosttime");
-        String actualResult = spellChecker.displayListOfSuggestions("rightmosttime");
+        spellChecker.findSuggestionsByChangingLetters(mispelledWordAccordingToFile);
+        spellChecker.insertLetterAtAnyPoint(mispelledWordAccordingToFile);
+        spellChecker.swapNeighboringCharacters(mispelledWordAccordingToFile);
+        spellChecker.noSuggestionForMisspelledWord(mispelledWordAccordingToFile);
+        String actualResult = spellChecker.displayListOfSuggestionsForOneWord("rightmosttime");
 
         Assert.assertEquals(expectedResult, actualResult);
     }
