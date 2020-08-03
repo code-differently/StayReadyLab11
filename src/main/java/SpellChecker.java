@@ -94,28 +94,27 @@ public class SpellChecker {
             findSuggestionsByChangingLetters(misspelledWord);
             insertLetterAtAnyPoint(misspelledWord);
             swapNeighboringCharacters(misspelledWord);
+            noSuggestionForMisspelledWord(misspelledWord);
         }
     }
 
     public void findSuggestionsUsingDelete(String wordToBeChanged) {
-        boolean lastCheckForSuggestions = false;
         for(int index = 0; index < wordToBeChanged.length(); index++) {
             String subsetOfWord = wordToBeChanged.substring(0, index) + wordToBeChanged.substring(index + 1);
-            populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, subsetOfWord, lastCheckForSuggestions);
+            populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, subsetOfWord);
         }
     }
 
     public void findSuggestionsByChangingLetters(String wordToBeChanged) {
         StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
         int lengthOfWord = flexibleWord.length();
-        boolean lastCheckForSuggestions = false;
 
         for(int letterIndex = 0; letterIndex < lengthOfWord; letterIndex++) {
             flexibleWord.replace(0, lengthOfWord, wordToBeChanged);
             for(int alphabetIndex = 0; alphabetIndex < alphabetArr.length; alphabetIndex++) {
                 int nextIndexAfterLetter = letterIndex + 1;
                 flexibleWord.replace(letterIndex, nextIndexAfterLetter, String.valueOf(alphabetArr[alphabetIndex]));
-                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString(), lastCheckForSuggestions);
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
             }
         }
     }
@@ -123,30 +122,28 @@ public class SpellChecker {
     public void insertLetterAtAnyPoint(String wordToBeChanged) {
         StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
         int lengthOfWord = flexibleWord.length();
-        boolean lastCheckForSuggestions = false;
 
         for(int indexOfBuilder = 0; indexOfBuilder < lengthOfWord; indexOfBuilder++) {
             for(int letterInAlpha = 0; letterInAlpha < alphabetArr.length; letterInAlpha++) {
                 flexibleWord.insert(indexOfBuilder, alphabetArr[letterInAlpha]);
-                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString(), lastCheckForSuggestions);
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString());
                 int lengthOfStringWithInsertion = flexibleWord.length();
                 flexibleWord.replace(0, lengthOfStringWithInsertion, wordToBeChanged);
             }
         }
     }
 
-    public void swapNeighboringCharacters(String wordToBeChanged) {
-        StringBuilder flexibleWord = new StringBuilder(wordToBeChanged);
+    public void swapNeighboringCharacters(String misspelledWord) {
+        StringBuilder flexibleWord = new StringBuilder(misspelledWord);
         int lengthOfWord = flexibleWord.length();
-        boolean lastCheckForSuggestions = true;
 
         for(int index = 0; index < lengthOfWord; index++) {
             if(index < lengthOfWord - 1) {
                 int oneAhead = index + 1;
-                flexibleWord.setCharAt(index, wordToBeChanged.charAt(oneAhead));
-                flexibleWord.setCharAt(oneAhead, wordToBeChanged.charAt(index));
-                populateSuggestionsIfChangedWordIsSpelledCorrectly(wordToBeChanged, flexibleWord.toString(), lastCheckForSuggestions);
-                flexibleWord.replace(0, lengthOfWord, wordToBeChanged);
+                flexibleWord.setCharAt(index, misspelledWord.charAt(oneAhead));
+                flexibleWord.setCharAt(oneAhead, misspelledWord.charAt(index));
+                populateSuggestionsIfChangedWordIsSpelledCorrectly(misspelledWord, flexibleWord.toString());
+                flexibleWord.replace(0, lengthOfWord, misspelledWord);
             }
         }
     }
@@ -161,18 +158,21 @@ public class SpellChecker {
         return this.alphabetArr;
     }
 
-    private void populateSuggestionsIfChangedWordIsSpelledCorrectly(String wordToBeChanged, String changedWord, boolean lastTry) {
-        if(setOfCorrectlySpelledWords.contains(changedWord)) {
-            if (!suggestions.containsKey(wordToBeChanged)) {
-                suggestions.put(wordToBeChanged, new TreeSet<String>());
+    private void populateSuggestionsIfChangedWordIsSpelledCorrectly(String misspelledWord, String correctedWord) {
+        if(setOfCorrectlySpelledWords.contains(correctedWord)) {
+            if (!suggestions.containsKey(misspelledWord)) {
+                suggestions.put(misspelledWord, new TreeSet<String>());
             }
             //keeping suggestions unique
-            if(!suggestions.get(wordToBeChanged).contains(changedWord)) {
-                suggestions.get(wordToBeChanged).add(changedWord);
+            if(!suggestions.get(misspelledWord).contains(correctedWord)) {
+                suggestions.get(misspelledWord).add(correctedWord);
             }
         }
-        if(lastTry && !suggestions.containsKey(wordToBeChanged)) {
-            suggestions.put(wordToBeChanged, new TreeSet<String>());
+    }
+
+    private void noSuggestionForMisspelledWord(String misspelledWord) {
+        if(!suggestions.containsKey(misspelledWord)) {
+            suggestions.put(misspelledWord, new TreeSet<String>());
         }
     }
 
