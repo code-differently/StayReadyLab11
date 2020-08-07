@@ -10,22 +10,20 @@ public class SpellChecker {
     private Scanner scanner = new Scanner(System.in);
 
     private final static Logger myLogger = Logger.getLogger("com.codedifferently.spellchecker");
-    private final File wordsSpelledCorrectlyFile = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt");
+    private final File wordsSpelledCorrectlyFile = new File("./words_alpha.txt");
     private final Character[] alphabetArr = new Character[26];
 
     public static void main(String[] args) {
         SpellChecker checker = new SpellChecker();
         checker.populateAlphabetArray();
         try {
-            checker.readFile(checker.getWordsSpelledCorrectlyFile(), true);
+            checker.readFileWithCorrectlySpelledWords(checker.getWordsSpelledCorrectlyFile());
+            checker.keepAskingUserUntilTheyInputTheRightFile();
+            checker.displayAllSuggestedWords();
         }
         catch(FileNotFoundException fileNotFound) {
-            myLogger.info("Make sure that the reference wordsSpelledCorrectlyFile has the right file path");
+            myLogger.severe("Make sure that the reference wordsSpelledCorrectlyFile has the right file path");
         }
-
-        checker.keepAskingUserUntilTheyInputTheRightFile();
-
-        checker.displayAllSuggestedWords();
     }
 
     private void displayAllSuggestedWords() {
@@ -39,10 +37,10 @@ public class SpellChecker {
         String path;
         boolean fileNotValid = true;
         while(fileNotValid) {
-            path = this.askUserForFilePath();
-            File file = this.tidyUpPathAndReturnFile(path);
             try {
-                this.readFile(file, false);
+                path = this.askUserForFilePath();
+                File file = tidyUpPathAndReturnFile(path);
+                this.readFileToCheckForErrors(file);
                 fileNotValid = false;
             }
             catch(FileNotFoundException fileNotFoundException) {
@@ -66,17 +64,26 @@ public class SpellChecker {
         return file;
     }
 
-    public void readFile(File file, boolean fileWithCorrectSpelling) throws FileNotFoundException {
+    public void readFileWithCorrectlySpelledWords(File file) throws FileNotFoundException {
         try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
             while(in.hasNext()) {
                 String individualWord = in.next().toLowerCase();
                 //replace a character that is not a-z with inserting nothing.
                 // (I don't check for A-Z because I change the string to lower case)
                 individualWord = individualWord.replaceAll("[^a-z]", "");
-                if(fileWithCorrectSpelling) {
-                    setOfCorrectlySpelledWords.add(individualWord);
-                }
-                else if(!wordSpelledCorrectly(individualWord)){
+                setOfCorrectlySpelledWords.add(individualWord);
+            }
+        }
+    }
+
+    public void readFileToCheckForErrors(File file) throws FileNotFoundException {
+        try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
+            while(in.hasNext()) {
+                String individualWord = in.next().toLowerCase();
+                //replace a character that is not a-z with inserting nothing.
+                // (I don't check for A-Z because I change the string to lower case)
+                individualWord = individualWord.replaceAll("[^a-z]", "");
+                if(!wordSpelledCorrectly(individualWord)){
                     findSuggestions(individualWord);
                 }
             }
@@ -179,12 +186,14 @@ public class SpellChecker {
     public String displayListOfSuggestionsForOneWord(String misspelledWord) {
         TreeSet<String> misspelledWordSuggestions = suggestions.get(misspelledWord);
         int sizeOfSuggestions = misspelledWordSuggestions.size();
-
         if(sizeOfSuggestions == 0) {
-            String noSuggestions = misspelledWord + ": (no suggestions)\n";
-            return noSuggestions;
+            return misspelledWord + ": (no suggestions)\n";
         }
 
+        return giveSuggestionsForOneWord(misspelledWord, misspelledWordSuggestions, sizeOfSuggestions).toString();
+    }
+
+    private StringBuilder giveSuggestionsForOneWord(String misspelledWord, TreeSet<String> misspelledWordSuggestions, int sizeOfSuggestions) {
         StringBuilder builder = new StringBuilder();
         builder.append(misspelledWord + ": ");
 
@@ -195,8 +204,10 @@ public class SpellChecker {
             index++;
         }
         builder.append("\n");
-        return builder.toString();
+        return builder;
     }
+
+
 
     public HashSet<String> getSetOfCorrectlySpelledWords() {
         return this.setOfCorrectlySpelledWords;

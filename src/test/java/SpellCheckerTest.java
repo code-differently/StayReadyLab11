@@ -7,21 +7,21 @@ import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 public class SpellCheckerTest {
-    private File file;
+    private File correctlySpelledWordsFile;
     private SpellChecker spellChecker;
     private final static Logger myLogger = Logger.getLogger("com.codedifferently.spellchecker");;
 
     @Before
     public void setUp() {
-        file = new File("words_alpha.txt");
+        correctlySpelledWordsFile = new File("./words_alpha.txt");
         spellChecker = new SpellChecker();
         try {
-            spellChecker.readFile(file, true);
+            spellChecker.readFileWithCorrectlySpelledWords(correctlySpelledWordsFile);
+            spellChecker.populateAlphabetArray();
         }
         catch(FileNotFoundException fileNotFound) {
             myLogger.info("Try again");
         }
-        spellChecker.populateAlphabetArray();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class SpellCheckerTest {
 
     @Test
     public void getWordsSpelledCorrectlyFileTest() {
-        String expectedFilePath = "C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\StayReadyLab11\\words_alpha.txt";
+        String expectedFilePath = ".\\words_alpha.txt";
 
         File wordsSpelledCorrectly = spellChecker.getWordsSpelledCorrectlyFile();
         String actualFilePath = wordsSpelledCorrectly.toString();
